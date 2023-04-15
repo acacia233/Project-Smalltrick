@@ -10,12 +10,12 @@ function InstallPackages {
     # Detect the OS
     if [[ $(grep -Ei 'debian|buntu' /etc/*release) ]]; then
         # Install required packages on Debian/Ubuntu
-        apt-get update
-        apt-get -y install curl grub-common
+        apt-get update >/dev/null 2>&1
+        apt-get -y install curl grub-common >/dev/null 2>&1
 
     elif [[ $(grep -Ei 'centos|redhat' /etc/*release) ]]; then
         # Install required packages on CentOS/RHEL
-        yum -y install curl grub2-tools
+        yum -y install curl grub2-tools >/dev/null 2>&1
 
     else
         echo -e " [Error] Unsupported OS. Aborting."
@@ -29,7 +29,7 @@ function DownloadNetbootKernel {
     # Download the netboot.xyz kernel
     NETBOOT_KERNEL="/boot/netboot.xyz.lkrn"
     if [ ! -f "$NETBOOT_KERNEL" ]; then
-        curl -o "$NETBOOT_KERNEL" "https://boot.netboot.xyz/ipxe/netboot.xyz.lkrn"
+        curl -o "$NETBOOT_KERNEL" "https://boot.netboot.xyz/ipxe/netboot.xyz.lkrn" >/dev/null 2>&1
     fi
     CreateGrubMenuEntry
 }
@@ -55,17 +55,17 @@ EOF
 function SetGrubMenuTimeout {
     echo -e " [Info] Setting GRUB menu timeout and updating GRUB configuration..."
     # Make the 00_custom file executable
-    chmod +x "${GRUB_CONFIG_DIR}/00_custom"
+    chmod +x "${GRUB_CONFIG_DIR}/00_custom" >/dev/null 2>&1
 
     # Set the GRUB menu timeout to 60 seconds
-    sed -i 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=60/' $GRUB_DEFAULT_CONFIG
+    sed -i 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=60/' $GRUB_DEFAULT_CONFIG >/dev/null 2>&1
 
     # Regenerate GRUB config
     if [[ $(grep -Ei 'debian|ubuntu' /etc/*release) ]]; then
-        update-grub
+        update-grub >/dev/null 2>&1
 
     elif [[ $(grep -Ei 'centos|redhat' /etc/*release) ]]; then
-        grub2-mkconfig -o /boot/grub2/grub.cfg
+        grub2-mkconfig -o /boot/grub2/grub.cfg >/dev/null 2>&1
     fi
     echo -e " [Info] Enjoy!"
 }
