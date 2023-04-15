@@ -39,27 +39,16 @@ function CreateGrubMenuEntry {
     # Create a GRUB menu entry for netboot.xyz
     GRUB_CONFIG_DIR="/etc/grub.d"
     GRUB_DEFAULT_CONFIG="/etc/default/grub"
-
-    if [[ $(grep -Ei 'debian|ubuntu' /etc/*release) ]]; then
-        cat > "${GRUB_CONFIG_DIR}/00_custom" <<EOF
+    
+    cat > "${GRUB_CONFIG_DIR}/00_custom" <<-EOF
 #!/bin/sh
 exec tail -n +3 \$0
 menuentry 'netboot.xyz' {
-    search --no-floppy --set=root --file /boot
+    search --no-floppy --set=root --file $NETBOOT_KERNEL
     linux16 $NETBOOT_KERNEL
 }
 EOF
 
-    elif [[ $(grep -Ei 'centos|redhat' /etc/*release) ]]; then
-        cat > "${GRUB_CONFIG_DIR}/00_custom" <<EOF
-#!/bin/sh
-exec tail -n +3 \$0
-menuentry 'netboot.xyz' {
-    search --no-floppy --set=root --file /boot
-    linux16 $NETBOOT_KERNEL
-}
-EOF
-    fi
     SetGrubMenuTimeout
 }
 
